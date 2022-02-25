@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyteBase - Box Mover</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="buttons">
+		<button class="btn" id="tg" onclick="box_toggle()">Box Toggle ON</button>
+		<button class="btn" onclick="create_box()">Create new Box</button>   
+		<h5>Click on "Create new Box" button to add a box</h5> 	
+		<h5>Select the box and press W,A,S,D or arrows to move the box</h5> 	
+	</div>
+    
+    <div id="box_border" class="container"></div>
+
+ 	<script type="text/javascript">
+ 		var toggle = true;
+ 		var selected = false;
+ 		var box_top=-50;
+        var box_left=-50;
+        var index = 1;
+        var box_array = [];
+        var box_height=90;
+        var box_width=90;
+        var c = document.getElementById("box_border").getBoundingClientRect();
+        function getRandomColor() {
+		  var letters = '0123456789ABCDEF';
+		  var color = '#';
+		  for (var i = 0; i < 6; i++) {
+		    color += letters[Math.floor(Math.random() * 16)];
+		  }
+		  return color;
+		}
+ 		function create_box(){        	
+            var div_e = document.createElement("div");
+            box_top=((box_top + box_height) < c.height - 50)?box_top+50:box_top;
+            // console.log(c.height);
+            var newcolor=getRandomColor();
+
+            box_left=(box_left < c.width-110)?box_left+50:box_left;
+            
+            div_e.style.height = box_height+"px";
+            div_e.style.width = box_width+"px";
+            div_e.style.left = box_left+"px";
+            div_e.style.top = box_top+"px";
+            div_e.id = index;
+            div_e.style.backgroundColor = newcolor;
+            
+            div_e.classList.add("box");
+            div_e.style.zIndex = index;
+            index++;
+            div_e.innerHTML = div_e.id
+            box_array.push(div_e)
+            div_e.addEventListener('click',()=>{
+                    selected = div_e.id
+                    for(var i=0;i<box_array.length;i++){
+                        if(box_array[i].id == selected && toggle){
+                            box_array[i].style.borderColor = "black"
+                        }
+                        else{
+                            box_array[i].style.borderColor  = "transparent"
+                        }
+                    }
+            });
+            document.getElementById("box_border").appendChild(div_e);
+        }
+
+        
+        var pushPixels = 5;
+ 		window.addEventListener('keydown',(e)=>{ 
+            var selected_box = document.getElementById(selected)
+                if(toggle){
+                switch (e.key) {
+                	case 'w':
+                	case 'W':
+                	case 'ArrowUp':  
+                		if ((parseInt(selected_box.style.top) - pushPixels)>=0) {
+                        	selected_box.style.top = parseInt(selected_box.style.top) - pushPixels + 'px';
+                    	}                      
+                        break;
+
+
+                    case 's':
+                    case 'S':                        
+                    case 'ArrowDown':                     
+                    	if ((parseInt(selected_box.style.top) + selected_box.offsetHeight + pushPixels)<c.height) {
+                        	selected_box.style.top = parseInt(selected_box.style.top) + pushPixels + 'px';
+                    	}
+                        break;
+
+
+                    case 'a':
+                    case 'A':
+                    case 'ArrowLeft':                   
+                        if ((parseInt(selected_box.style.left) - pushPixels)>=0) {
+                        	selected_box.style.left = parseInt(selected_box.style.left) - pushPixels + 'px';
+                    	}
+                        break;
+
+
+
+                    case 'd':
+                    case 'D':
+                    case 'ArrowRight':
+                        if ((parseInt(selected_box.style.left) + selected_box.offsetWidth +pushPixels)<c.width) {
+                        	selected_box.style.left = parseInt(selected_box.style.left) + pushPixels + 'px';
+                    	}                   
+                        break;
+                    
+                    
+                    
+                    case 'Delete':
+                        selected_box.remove();
+                        break;
+                }
+            }
+            
+        });
+
+        function box_toggle(){
+            toggle = !toggle
+            document.getElementById('tg').innerText = toggle?'Box Toggle ON':'Box Toggle OFF'
+        }
+ 	</script>   
+</body>
+</html>
